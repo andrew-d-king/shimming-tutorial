@@ -102,7 +102,7 @@ def get_independent_embeddings(embs):
 
     print(f'Built 100,000 greedy MIS.  Took {time.process_time()-start} seconds')
     print(f'Found {len(Sbest)} disjoint embeddings.')
-    return [embs[x] for x in Sbest]
+    return [embs[x] for x in sorted(Sbest)]
 
 
 def search_for_subgraphs_in_subgrid(B, subgraph, timeout=20, max_number_of_embeddings=np.inf, verbose=True):
@@ -186,7 +186,7 @@ def raster_embedding_search(A_, subgraph, raster_breadth=5, delete_used=False,
 
             if verify_embeddings:
                 for emb in sub_embs:
-                    X = list(embedding.diagnose_embedding({p: [q] for p, q in enumerate(emb)}, subgraph, A_))
+                    X = list(embedding.diagnose_embedding({p: [emb[p]] for p in sorted(emb.keys())}, subgraph, A_))
                     if len(X):
                         print(X[0])
                         raise Exception
@@ -196,7 +196,7 @@ def raster_embedding_search(A_, subgraph, raster_breadth=5, delete_used=False,
     # Get independent set of embeddings
     independent_embs = get_independent_embeddings(embs)
 
-    embmat = np.asarray([[ie[v] for ie in independent_embs] for v in subgraph.nodes]).T
+    embmat = np.asarray([[ie[v] for ie in independent_embs] for v in sorted(subgraph.nodes)]).T
     return embmat
 
 
